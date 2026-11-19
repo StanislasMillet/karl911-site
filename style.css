@@ -1,0 +1,196 @@
+/* ---------- Base ---------- */
+:root {
+  --bg: #fff;
+  --ink: #111;
+  --red: #d3262b;        /* rouge du survol Instagram et des flèches */
+  --band-top: #d3262b;   /* couleur de la bande du haut */
+  --band-bottom: #000;   /* couleur de la bande du bas */
+  --gap: 4px;            /* espace entre les photos */
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+img, video { display: block; width: 100%; }
+img { height: auto; }   /* garde le format d'origine de chaque photo (pas d'écrasement) */
+a { color: inherit; }
+
+/* ---------- Logo centré ---------- */
+.top {
+  text-align: center;
+  padding: 1.4rem 1rem;
+}
+.brand {
+  display: inline-block;
+  font-size: clamp(1.4rem, 3vw, 2rem);
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-decoration: none;
+  pointer-events: none;
+}
+
+/* ---------- Bandes qui défilent (haut et bas) ---------- */
+.marquee {
+  color: #fff;
+  overflow: hidden;
+  white-space: nowrap;
+  padding: .75rem 0;
+  font-size: clamp(1rem, 2vw, 1.4rem);
+  font-weight: 700;
+  letter-spacing: .08em;
+}
+.marquee-top    { background: var(--band-top);    --dur: 60s; }
+.marquee-bottom { background: var(--band-bottom); --dur: 28s; }   /* plus petit = plus rapide */
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee var(--dur) linear infinite;
+}
+.marquee-half { display: flex; flex-shrink: 0; }
+.marquee span, .marquee .insta { padding: 0 1.2rem; }
+.marquee .sep { padding: 0 .4rem; opacity: .85; }
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }    /* de droite vers la gauche */
+}
+
+/* Instagram : rouge au survol (toutes les répétitions deviennent rouges ensemble) */
+.insta { color: #fff; text-decoration: none; }
+.insta:hover,
+.marquee:has(.insta:hover) .insta { color: var(--red); }
+
+/* ---------- Vidéo 1 + texte ---------- */
+.hero {
+  position: relative;
+  height: 85vh;
+  min-height: 420px;
+  background: #000;
+  overflow: hidden;
+}
+.hero video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;     /* remplit tout l'espace, recadre si besoin */
+}
+.hero::after {           /* voile sombre pour lire le texte */
+  content: "";
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,.65), rgba(0,0,0,0) 60%);
+}
+.hero-text {
+  position: absolute;
+  left: 0; right: 0; bottom: 4vh;   /* proche de l'angle bas */
+  z-index: 1;
+  padding: clamp(1rem, 3vw, 2.2rem);
+  color: #fff;
+}
+.hero-text p {
+  margin: 0;
+  max-width: 34ch;
+  font-size: clamp(1.1rem, 2vw, 1.6rem);
+  line-height: 1.35;
+}
+.hero-text img { width: min(560px, 80vw); height: auto; }
+
+/* ---------- Photos & vidéo : bloc fixe, 3 colonnes de même hauteur ---------- */
+.photos {
+  display: flex;
+  gap: var(--gap);
+  padding: var(--gap) 0;
+}
+.col {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;   /* les colonnes finissent toutes à la même hauteur */
+}
+.photos img, .photos video { cursor: zoom-in; }
+.vert { aspect-ratio: 9 / 16; object-fit: cover; background: #000; }
+
+/* ---------- Vidéo 2 ---------- */
+.film video {
+  height: 85vh;
+  min-height: 420px;
+  object-fit: cover;
+  background: #000;
+}
+
+/* ---------- Photo / Vidéo agrandie au clic ---------- */
+.lightbox {
+  position: fixed; inset: 0; z-index: 50;
+  display: none; align-items: center; justify-content: center;
+  padding: 2rem 4.5rem;
+  background: rgba(0,0,0,.45);
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);          /* fond flou */
+  cursor: zoom-out;
+}
+.lightbox.on { display: flex; }
+.lightbox-inner {
+  display: flex;
+  align-items: flex-end;                /* le titre est aligné en bas de l'élément */
+  gap: 1.6rem;
+}
+.lightbox img,
+.lightbox video {
+  width: auto; height: auto;
+  max-width: calc(100vw - 9rem - 1.6rem - 16rem);   /* laisse la place au titre à droite */
+  max-height: calc(100vh - 4rem);
+  cursor: default;
+}
+.lightbox-title {
+  width: 16rem;
+  color: #fff;
+  font-size: 1.2rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  line-height: 1.3;
+}
+
+/* Flèches de navigation */
+.lightbox-arrow {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 3rem;
+  line-height: 1;
+  padding: .5rem 1rem;
+  cursor: pointer;
+  z-index: 60;
+  opacity: .7;
+  transition: opacity .2s, color .2s;
+  user-select: none;
+}
+.lightbox-arrow:hover {
+  opacity: 1;
+  color: var(--red);
+}
+.lightbox-arrow.prev { left: .5rem; }
+.lightbox-arrow.next { right: .5rem; }
+
+/* ---------- Mobile ---------- */
+@media (max-width: 720px) {
+  .hero, .film video { height: 70vh; }
+  .hero-text { bottom: 3vh; }
+  .lightbox { padding: 2rem 3rem; }
+  .lightbox-inner { flex-direction: column; align-items: flex-start; gap: 1rem; }
+  .lightbox img,
+  .lightbox video { max-width: calc(100vw - 6rem); max-height: calc(100vh - 10rem); }
+  .lightbox-title { width: auto; }
+  .lightbox-arrow { font-size: 2.2rem; padding: .5rem; }
+}
+
+/* ---------- Mouvement réduit (réglage système) ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track { animation: none; }
+}
