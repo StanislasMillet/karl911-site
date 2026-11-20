@@ -130,6 +130,7 @@ a { color: inherit; }
   -webkit-backdrop-filter: blur(18px);
   backdrop-filter: blur(18px);          /* fond flou */
   cursor: zoom-out;
+  touch-action: pan-y;
 }
 .lightbox.on { display: flex; }
 .lightbox-inner {
